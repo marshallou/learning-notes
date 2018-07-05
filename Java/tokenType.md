@@ -1,5 +1,5 @@
-### Type erase: the generic type will be erased at run time which means we are not able to get parameterized class 
-information at Runtime.
+### Type erase: 
+the generic type will be erased at run time which means we are not able to get parameterized class information at Runtime.
 For example, 
 
 ```
