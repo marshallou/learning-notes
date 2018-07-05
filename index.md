@@ -1,5 +1,5 @@
 # Java
- * [TokenType](https://marshallou.github.io/learning-notes/Java/tokenType.md)
+ * [TokenType](https://github.com/marshallou/learning-notes/blob/master/Java/tokenType.md)
 
 
 # git
