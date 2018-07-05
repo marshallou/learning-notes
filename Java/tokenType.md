@@ -14,7 +14,7 @@ TokenType is mainly used to create, manipulate, and query Type information.
 For example, Gson library `fromJson` method will take a Json `String` and `Class<T>` to generate
 a new instance of given class. 
 
-If the given Json is a list of String, we need to pass in corresponding `Class<T>` to be `List<String>` which
+If the given Json is a list of String, for this case, the `Class<T>` we need to pass in, will be `List<String>` which
 is not able to get from the way mentioned above.
 
 For places where we need type which is `List<String>` like this, we can use TokenType.
@@ -30,12 +30,13 @@ TypeToken utilizes following feature to get parameterized type `String`:
 
 ```
 Class#getGenericSuperclass() does the following
-Returns the Type representing the direct superclass of the entity (class, interface, primitive type or void) represented by this Class.
+Returns the Type representing the direct superclass of the entity (class, interface, primitive type or void) represented by
+this Class.
 
-If the superclass is a parameterized type, the Type object returned must accurately reflect the actual type parameters used in the source code.
+If the superclass is a parameterized type, the Type object returned must accurately reflect the actual type parameters used 
+in the source code.
 ```
 
-Some of library's, e.g Gson, will use this Type info to convert
 
 ### Parameterize Class Type of TypeToken
 For previous example, we hardcoded the TypeToken's List type to be `String`. By doing
