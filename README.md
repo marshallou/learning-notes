@@ -1,5 +1,5 @@
 ## Distributed System
- * [reading notes of DDIA] 
+ * [reading notes of DDIA](https://github.com/marshallou/learning-notes/tree/master/DistributedSystem/DDIA)
 
 ## Java
  * [TokenType](https://github.com/marshallou/learning-notes/blob/master/Java/tokenType.md)
