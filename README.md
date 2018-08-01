@@ -1,3 +1,6 @@
+## Distributed System
+ * [reading notes of DDIA] 
+
 ## Java
  * [TokenType](https://github.com/marshallou/learning-notes/blob/master/Java/tokenType.md)
  
