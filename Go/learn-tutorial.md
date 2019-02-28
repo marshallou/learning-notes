@@ -171,6 +171,107 @@ a[1] = 2
 primes := [6]int{2, 3, 5, 7}
 ```
 
+4. Slice
+
+slice is defined by []T
+
+```
+primes := [6]int{2, 3, 5, 7, 11, 13}
+var s []int = primes[1:4]
+
+//slice literal
+var s := []int{2, 3, 5}
+```
+
+slice default is similar to python
+
+```
+a[0:10]
+a[:10]
+a[0:]
+a[:]
+```
+
+slice length and capacity
+
+```
+len(s)
+cap(s)
+
+// short the length of s
+s = s[:0]， s = s[2:]
+
+// extend the length of s
+s = s[:4]
+
+// previous operation is called re-slice
+```
+
+nil: slice with both length and capacity of 0. Note slice[0:0] is not nil, since the 
+capcacity of r may not be 0
+
+make: create dynamic sized slice
+
+```
+a := make([]int, 5)     //length is 5, capacity is also 5
+b := make([]int, 0, 5)  //length is 0, capacity is 5
+
+```
+
+slice of slice
+```
+board := [][]string{
+  []string{"_", "_", "_"},
+  []string{"_", "_", "_"}
+}
+```
+
+append: append will allocate a bigger array if the original array is too small. 
+
+```
+apend(s []T, vs ...T) []T
+```
+
+example show new array allocated.
+
+```
+var s[]int
+s = append(s, 0, 1, 2)
+q := s[:]
+
+s = append(s, 3) // now s = {0, 1, 2, 3,} but q is still {0, 1, 2}
+```
+
+5. range
+
+range used in for loop
+
+```
+var pow = []int{1, 2, 4, 8}
+
+func main() {
+  for i, v := range pow {
+
+  }
+}
+
+//drop the value
+for i := range pow {
+
+}
+
+//drop the index
+for _, v := pow {
+  
+}
+```
+
+
+
+
+
+
+
 
 
 
