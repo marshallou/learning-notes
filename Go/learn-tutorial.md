@@ -262,17 +262,98 @@ for i := range pow {
 
 //drop the index
 for _, v := pow {
-  
+
 }
 ```
 
+6. Maps
 
+definition and initialization
 
+```
+//declaration
+var m map[string]Vertex
 
+//initialization
+m = make(map[string]Vertex)
 
+//initialization2: literal
+m = map[string]Vertex{
+  "Bell Labs": Vertex {
+    40.68, -74.39,
+  },
+  "Google": Vertex {
+    37.42, -122.08
+  }
+}
 
+//initialization3: since "Vertex" has appeared in type definition of map
+//the "Vertex" in literal can be obmit
 
+m = map[string]Vertex {
+  "Bell Labs": {40.68, -74},
+  "Google": {37, -122}
+}
 
+```
+
+Mutating map
+
+```
+//insert
+map[key] elem
+
+//retrieve
+elem = m[key]
+
+//delete
+delete(m, key)
+
+//test
+elem, ok = m[key]
+elem, ok := m[key] //if elem and ok is not defined
+
+```
+
+exercise 
+
+```
+func WordCount(s string) map[string]int {
+    words := strings.Fields(s)
+    wordCountMap :=make(map[string]int)
+  for _, word := range words {
+     count, ok := wordCountMap[word]
+     if ok {
+         wordCountMap[word] = count + 1
+     } else {
+         wordCountMap[word] = 1
+     }
+  }
+  return wordCountMap
+}
+```
+
+7. function values and closure
+
+function is also a value which can be passed into another function as argument
+
+```
+func compute(fn func(float64, float64) float64) float64 {
+    return fn(3, 4)
+}
+```
+
+closure
+
+```
+func adder() func(int) int {
+    sum := 0
+    return func(x int) int {
+        sum += x
+        return sum
+    }
+}
+```
 
 
 
