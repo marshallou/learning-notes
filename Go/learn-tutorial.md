@@ -375,6 +375,8 @@ func main() {
 
 ```
 
+2. Receiver of the method and the method have to be defined within the same package
+
 
 
 
