@@ -1,5 +1,7 @@
 https://tour.golang.org
+
 ### variables
+
 1. initializer
 
 ```
@@ -355,6 +357,23 @@ func adder() func(int) int {
 }
 ```
 
+### Methods
+
+1. Go does not have class. But methods has receiver
+
+```
+func (v Vertex) Abs() float64 {
+    return math.Sqrt(v.X * v.X +  v.Y *v.Y)
+}
+
+func main() {
+    v := Vertex{3, 4}
+    fmt.Println(v.Abs())   
+    //v.Abs() looks like "Abs" becomes the method of "v", but it is defined at top level
+    //so go is very functional oriented?
+}
+
+```
 
 
 
