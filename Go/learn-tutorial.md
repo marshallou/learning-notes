@@ -359,7 +359,7 @@ func adder() func(int) int {
 
 ### Methods
 
-1. Go does not have class. But methods has receiver
+1. Go does not have class. But methods has receiver. method's name is using capter letter
 
 ```
 func (v Vertex) Abs() float64 {
@@ -375,7 +375,34 @@ func main() {
 
 ```
 
-2. Receiver of the method and the method have to be defined within the same package
+2. Receiver of the method and the method have to be defined within the same package.
+
+3. Pointer receivers
+
+Method with non-poiter receiver operates on a copy of the original value. While pointer receiver method operates 
+on orignal value directly. 
+
+```
+func (v Vertex) Scale1(f float64) {
+  v.X = v.X * f
+  v.Y = v.Y * f
+}
+
+func (v *Vertex) Scale2(f float64) {
+  v.X = v.X * f
+  v.Y = v.Y * f
+}
+
+func main() {
+  v := vertex{3, 4}
+  v.Scale1(10)      //v defined in main is not scaled
+  v.Scale2(10)      //v defined in main is scaled
+  fmt.Println(v.Abs())
+}
+
+```
+
+question: as we can always rewrite a Method to be a normal function. When to use function and when to use Method
 
 
 
