@@ -402,16 +402,115 @@ func main() {
 
 ```
 
-question: as we can always rewrite a Method to be a normal function. When to use function and when to use Method
+> question: as we can always rewrite a Method to be a normal function. What is the difference? When to use function and when to use Method? 
+The answer is Interface
 
+### Interfaces
 
+1. Method has receiver argument. So we can see the receiver argument implements a Method.
+If the Method has the same signature as interface. The value of type interface can hold the receiver argument
 
+```
+type Abser interface {
+  Abs() float64
+}
 
+type MyFloat float64
 
+func (f MyFloat) Abs() float64 {
+   ....
+}
 
+func main() {
+  var a Abser
+  f := myfloat(-math.Sqrt2)
+  a = f
+}
 
+```
 
+2. nil receiver
 
+```
+type I interface {
+    M()
+}
 
+//Type *T implements I interface 
+type T struct {
+    S string
+}
+
+func (t *T) M() {
+    if (t == nil) {
+        fmt.Prinln("nil")
+        return
+    }
+    
+    fmt.Println(t.S)
+}
+
+func main() {
+    var i I
+    var t *T   //define a varaible "t" which is nil
+    i = t      //assign "t" to "i". But i is NOT nil. We can treat i as tuple of (value, a concreate type), i.e
+               // (nil, main.*T)
+
+    i.M()      //this will print "nil". If we remove "nil" handling in Method "M", 
+               //it will throw error of "invalid memory address"
+}
+```
+
+3. The empty interface
+
+an empty interface may hold values of any type
+
+4. type assertions
+
+```
+// this is an assertion that interface i's concrete type is T
+t := i.(T)
+
+// if not sure, we can use "test"
+t, ok := i.(T)
+
+// type switch
+switch v := i.(type) {
+  case int:
+    fmt.Printf("Twice %v is %v\n", v, v*2)
+  case string:
+    fmt.Printf("%q is %v bytes long\n", v, len(v))
+  default:
+    fmt.Printf("I don't know about type %T!\n", v)
+  }
+```
+
+5. most ubiquitous interface is Stringer
+
+```
+type Stringer interface {
+    String() string
+}
+```
+
+6. error interface
+
+```
+type error interface {
+    Error() string
+}
+
+//check error, when calling functions
+
+i, err := strconv.Atoi("42")
+if err != nil {
+    fmt.Printf("couldn't convert number: %v\n", err)
+    return
+}
+fmt.Println("Converted integer:", i)
+```
+
+7. Readers interface
+https://tour.golang.org/methods/21
 
 
