@@ -12,3 +12,8 @@
 
 ## git
 * [config github email](https://help.github.com/articles/setting-your-commit-email-address-in-git/) 
+* [git markdown features](https://guides.github.com/features/mastering-markdown/)
+
+## cmu-15-445 (database)
+* [buffer pool manager](https://github.com/marshallou/learning-notes/blob/master/database-15-445/buffer-pool-manager.md)
+* 
