@@ -16,5 +16,5 @@
 * [toc converter](https://ecotrust-canada.github.io/markdown-toc/)
 
 ## cmu-15-445 (database)
-* [buffer pool manager](https://github.com/marshallou/learning-notes/blob/master/database-15-445/buffer-pool-manager.md)
-* 
+* [buffer pool manager concepts](https://github.com/marshallou/learning-notes/blob/master/database-15-445/buffer-pool-manager.md)
+* [buffer pool c++ implementation](https://github.com/marshallou/learning-notes/blob/master/database-15-445/buffer-pool-manager-implementation.md)

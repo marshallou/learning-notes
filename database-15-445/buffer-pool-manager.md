@@ -1,4 +1,37 @@
 # Buffer pool manager
+
+- [Buffer pool manager](#buffer-pool-manager)
+  * [1. General database concepts](#1-general-database-concepts)
+    + [1.1 database vs database management system](#11-database-vs-database-management-system)
+    + [1.2 physical layer and logical layer](#12-physical-layer-and-logical-layer)
+    + [1.3 data models: we will learn relational data model](#13-data-models--we-will-learn-relational-data-model)
+    + [1.4 relational data model concepts](#14-relational-data-model-concepts)
+      - [1.4.1 primary key and foreign key](#141-primary-key-and-foreign-key)
+      - [1.4.2 relational algebra vs relational calculas](#142-relational-algebra-vs-relational-calculas)
+      - [1.4.3 relational algebra vs relational calculas](#143-relational-algebra-vs-relational-calculas)
+    + [1.5 OLTP vs OLAP](#15-oltp-vs-olap)
+    + [1.5.1 N-ary storage model (NSM)](#151-n-ary-storage-model--nsm-)
+    + [1.5.2 Decomposition Storage model (dsm)](#152-decomposition-storage-model--dsm-)
+  * [2. disk/storage manager](#2-disk-storage-manager)
+    + [2.1 what it is?](#21-what-it-is-)
+    + [2.2 mmap](#22-mmap)
+    + [2.3 file](#23-file)
+    + [2.4 page](#24-page)
+      - [2.4.1 page's tuple storage approach](#241-page-s-tuple-storage-approach)
+      - [2.4.2 page's log-structured organization](#242-page-s-log-structured-organization)
+  * [3. buffer pool](#3-buffer-pool)
+    + [3.1 page table and frame](#31-page-table-and-frame)
+      - [3.1.1 page table vs page directory](#311-page-table-vs-page-directory)
+      - [3.1.2 page table and meta-data](#312-page-table-and-meta-data)
+      - [3.1.3 page table and hash](#313-page-table-and-hash)
+    + [3.2 replacement policy](#32-replacement-policy)
+    + [3.3 multiple buffer pools](#33-multiple-buffer-pools)
+  * [4. Extendible hashing](#4-extendible-hashing)
+    + [4.1 extendible vs chained hashing](#41-extendible-vs-chained-hashing)
+      - [4.2 internal data structure](#42-internal-data-structure)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 ## 1. General database concepts
 ### 1.1 database vs database management system
 * Database is the system that actually stores data. For example, flat file
@@ -106,16 +139,16 @@
 * frame: Inside the buffer pool, the place where we store the page data is called frame.
 * page table: page table is the table map from pageId to frame which will be used by execution engine to query the page. If the page table says it is not in frame, we will need to bring to it from disk.
 
-####3.1.1 page table vs page directory
+#### 3.1.1 page table vs page directory
 * page directory is map from page id to page location on disk, i.e, which file and what offset.
 * page table is map from page id to frame.
 
-####3.1.2 page table and meta-data
+#### 3.1.2 page table and meta-data
 * The page table is considered as meta-data of buffer pool. Inside the page table, there are two meta-data that needs to be kept track of, i.e the dirty flag and pin.
 * use pin to mark the certain page table entry as is being read by some threads. This will prevent other threads to evict the page entry.
 * dirty flag: mark the page in buffer pool has been modified and we need to make sure it is writen back to disk.
 
-####3.1.3 page table and hash
+#### 3.1.3 page table and hash
 * static hashing: means that we know all the keys we want to hash before hand. We do not need to delete and update the key/value. Example: linear probe hashing, Robin hood hashing, cuckoo hashing
 * dynamic hashing: dynamic hash tables are able to grow and shrink on demand. Example, Extendible hashing and Chained hashing
 
@@ -129,12 +162,12 @@
 * Thus, we do not need thread-safe guarentee.
 
 ## 4. Extendible hashing
-###4.1 extendible vs chained hashing
+### 4.1 extendible vs chained hashing
 * Chained hashing is how JDK hashmap is implemented
 * extension of chained hashing, the difference is that the chained hash will increment the linked list of buckets to solve collision. But the extendible hashing tries to keep the bucket size the same so that we do not have to do linear scan, when collision happens.
 * The basic idea is to create new bucket, when the old one is full.
 
-####4.2 internal data structure
+#### 4.2 internal data structure
 * There are two data structures the extendible hash table maintain: **global slots** and **local buckets**.
 * The globle slot is a pointer which points to a local bucket.
 * There are two depths the extendible hashing maintain: **global depth** and **local depth**. 
