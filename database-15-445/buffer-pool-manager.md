@@ -34,6 +34,20 @@
 * product -> from/from cross_join
 * join -> natural_join/from where
 
+### 1.5 OLTP vs OLAP
+* OLTP: Simple queries that read/update a small amount of data that is related to a single entity in the database.
+* OLAP: Complex queries that read large portions of the database spanning multiple entities.
+
+### 1.5.1 N-ary storage model (NSM)
+* stores all attributes for a single tuple continguously in a page
+* ideal for OLTP workloads where queries tend to operate only on an individual enitty and insert heavy workloads.
+
+### 1.5.2 Decomposition Storage model (dsm)
+* This is known as a "column store"
+* This model is ideal for OLAP workloads where read-only queries perform large scan over a subset of the table's attributes.
+* There is meta-data stored to help restoring the whole row.
+
+
 ## 2. disk/storage manager
 ### 2.1 what it is? 
 * it is the system that manages how the data is fetched from disk to memory.
@@ -85,3 +99,46 @@
 * To read a record, the DBMS scans the log backwards to "re-creates" the tuple to find what it needs.
 * build index to allow it to jump to locations in the log.
 * There is periodically compaction running.
+
+## 3. buffer pool
+### 3.1 page table and frame
+* The buffer pools consists of two parts: frame and page table. Page table maintains the pageId to frame. Frame contains the actual page data.
+* frame: Inside the buffer pool, the place where we store the page data is called frame.
+* page table: page table is the table map from pageId to frame which will be used by execution engine to query the page. If the page table says it is not in frame, we will need to bring to it from disk.
+
+####3.1.1 page table vs page directory
+* page directory is map from page id to page location on disk, i.e, which file and what offset.
+* page table is map from page id to frame.
+
+####3.1.2 page table and meta-data
+* The page table is considered as meta-data of buffer pool. Inside the page table, there are two meta-data that needs to be kept track of, i.e the dirty flag and pin.
+* use pin to mark the certain page table entry as is being read by some threads. This will prevent other threads to evict the page entry.
+* dirty flag: mark the page in buffer pool has been modified and we need to make sure it is writen back to disk.
+
+####3.1.3 page table and hash
+* static hashing: means that we know all the keys we want to hash before hand. We do not need to delete and update the key/value. Example: linear probe hashing, Robin hood hashing, cuckoo hashing
+* dynamic hashing: dynamic hash tables are able to grow and shrink on demand. Example, Extendible hashing and Chained hashing
+
+
+### 3.2 replacement policy
+* LRU
+
+### 3.3 multiple buffer pools
+* buffer pool per database instance
+* buffer pool per page type: index page, tuple pages
+* Thus, we do not need thread-safe guarentee.
+
+## 4. Extendible hashing
+###4.1 extendible vs chained hashing
+* Chained hashing is how JDK hashmap is implemented
+* extension of chained hashing, the difference is that the chained hash will increment the linked list of buckets to solve collision. But the extendible hashing tries to keep the bucket size the same so that we do not have to do linear scan, when collision happens.
+* The basic idea is to create new bucket, when the old one is full.
+
+####4.2 internal data structure
+* There are two data structures the extendible hash table maintain: **global slots** and **local buckets**.
+* The globle slot is a pointer which points to a local bucket.
+* There are two depths the extendible hashing maintain: **global depth** and **local depth**. 
+ * The hash table first hash the key and then use global depth to fetch the bits from the hashed key to find the cooresponding global slot. 
+ * Thus, we can see the global depth bit controls which local bucket to go to search.
+* the local depth bit represents what global slots are referening to this local bucket. Since local depth can be shorter than global depth, it means there are more than two global slots that are referencing this local buckets
+* Note global depth equals the **largest** number of local depth.
