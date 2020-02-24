@@ -121,6 +121,8 @@ template <typename T> class Blob {	// each instantiation of Blob grants access 
 
 ## 2. c++ learning: Copy control
 
+* There is an good [stackoverflow](https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom) explaination. **Should take a look, when I get some time.**
+
 ### 2.1 copy constructor
 
 ```
@@ -225,6 +227,7 @@ struct NoCopy {	NoCopy() = default; // use the synthesized default constructor
 ```
 
 ##3 c++ learning: move
+* There is a very good explaination on [stackoverflow](https://stackoverflow.com/questions/3106110/what-is-move-semantics)
 
 ### 3.1 why move?
 * performance boost
@@ -240,14 +243,26 @@ StrVec::StrVec(StrVec &&s) noexcept: elements(s.elements), first_free(s.first_fr
 }
 ```
 
-#### 3.2.1 rvalue reference
-* it is reference that binds to a rvalue. 
-* it is an object about to be destroyed. We use && to get rvalue reference
+#### 3.2.1 the differene between lvalue and rvalue
+* copied some explaination from previous stackoverflow as below
 
-#### 3.2.2 the differene between lvalue and rvalue
-* Lvalue refers to be object identity, while rvalue refers to be object's value.
-* Lvalues have persistent state, whereas rvalues are either literals or temporary objects created in the course of evaluating expressions.
+```
+string a(x);                                    // Line 1
+string b(x + y);                                // Line 2
+string c(some_function_returning_a_string());   // Line 3
+```
+
+* Did you notice how I just said x three times (four times if you include this sentence) and meant the exact same object every time? We call expressions such as x "lvalues".
+* The arguments in lines 2 and 3 are not lvalues, but rvalues, because the underlying string objects have no names, so the client has no way to inspect them again at a later point in time. rvalues denote temporary objects which are destroyed at the next semicolon (to be more precise: at the end of the full-expression that lexically contains the rvalue).
+* **An rvalue of class type is an expression whose evaluation creates a temporary object. Under normal circumstances, no other expression inside the same scope denotes the same temporary object.**
+* This is important because during the initialization of b and c, we could do whatever we wanted with the source string, and the client couldn't tell a difference!
 * variable is lavlue
+
+#### 3.2.2 rvalue reference
+* As we know, moving lvalue is dangerous, since lvalue can be referenced again later after the move. As move will "steal" the resource from lvalue, try use those resources in lvalue after move will cause undefine behavior.
+* rvalue reference implemented in c++ 11 is used to solve the problem.
+* it is reference that binds to a rvalue. 
+* We use ```&&r``` to get rvalue reference, while ```&r``` is lvalue reference.
 
 ```
 int &r1 = i;   //ok, lvalue
@@ -256,21 +271,42 @@ int &&r2 = i;  //error, rvalue can not bind to variable which is lvalue.
 int &r1 = i * 42 //error, i * 42 is rvalue
 ```
 
+* The move constructor takes rvalue reference as parameter. This prevents the lvalue to be moved. For example, ```unique_ptr```'s move constructor takes rvalue reference.
+
+```
+unique_ptr(unique_ptr&& source)   // note the rvalue reference
+    {
+        ptr = source.ptr;
+        source.ptr = nullptr;
+    }
+```
+
+```
+unique_ptr<Shape> a(new Triangle);
+unique_ptr<Shape> b(a);                 // error
+unique_ptr<Shape> c(make_triangle());   // okay
+```
+
 #### 3.2.3 about noexcept
 * To avoid this potential problem, vector must use a copy constructor instead of a move constructor during reallocation unless it knows that the element type’s move constructor cannot throw an exception. 
 
 ### 3.3 ```std:move```
-* ```std::move``` takes rvalue reference and returns another rvalue reference.
+* Sometimes, we want to move from lvalues. That is, sometimes we want the compiler to treat an lvalue as if it were an rvalue, so it can invoke the move constructor, even though it could be potentially unsafe.
 * When ```std:move``` is called. We’re using the ```move``` constructor. Since we are using move constructor, the memory managed by those objects will not be copied. 
 * It is essential to realize that the call to move promises that we do not intend to use lvalue again except to assign to it or to destroy it.
+* ```std::move(some_lvalue)``` casts an lvalue to an rvalue, thus enabling a subsequent move. But it does not move anything by itself.
 
 ```int &&rr3 = std::move(rr1);
 ```
 
+### 3.4 xvalue
+
+* Note that even though ```std::move(a)``` is an rvalue, its evaluation does not create a temporary object. This conundrum forced the committee to introduce a third value category. Something that can be bound to an rvalue reference, even though it is not an rvalue in the traditional sense, is called an xvalue (eXpiring value). The traditional rvalues were renamed to prvalues (Pure rvalues).
+
 ### 3.4 move assignment operator
 * like copy, for move, we also have move assignment operator
 * These members are similar to the corresponding copy operations, but they “steal” resources from their given object rather than copy them.
-* In particular, once its resources are moved, the original object must no longer point to those moved resources.
+* In particular, once its resources are moved, the original object must no longer point to those moved resources. Setting moved resources in rvalue to nullptr is very important. The reason is because the rvalue may be destroyed and during the time, the resources in the rvalue may also be destroyed by deconstructor.
 * add noexcept if possible
 * Like a copy-assignment operator, a move-assignment operator must guard against self-assignment
 * note &rhs is the address of rvalue. Checking ```this != $rhs``` is basically checking if they are the same address.
@@ -284,6 +320,18 @@ StrVec &StrVec::operator=(StrVec &&rhs) noexcept{	// direct test for self-assi
 		return *this; 
 }
 ```
+
+* From stackoverflow link above we know, We can also pass original type to move assignment operator. Take string as an example.
+
+```
+string& operator=(string that)
+    {
+        std::swap(data, that.data);
+        return *this;
+    }
+```
+
+* Note that we pass the parameter that by value, so that has to be initialized just like any other string object. Exactly how is that going to be initialized? In the olden days of C++98, the answer would have been "by the copy constructor". In C++0x, the compiler chooses between the copy constructor and the move constructor based on whether the argument to the assignment operator is an lvalue or an rvalue.
 
 ### 3.5 synthesized move operator
 * if a class defines its own copy constructor, copy-assignment operator, or destructor, the move constructor and move- assignment operator are not synthesized. 
