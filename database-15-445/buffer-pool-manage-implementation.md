@@ -1,3 +1,26 @@
+- [1. ExtendibleHashMap](#1-extendiblehashmap)
+  * [1.1 Find](#11-find)
+  * [1.2 insert](#12-insert)
+    + [1.2.1 peroform find](#121-peroform-find)
+    + [1.2.2 insert](#122-insert)
+    + [1.2.3 split the Bucket](#123-split-the-bucket)
+      - [1.2.3.1 double global slot](#1231-double-global-slot)
+      - [1.2.3.1 update global slot to point to new Bucket](#1231-update-global-slot-to-point-to-new-bucket)
+- [2. LRU replacer](#2-lru-replacer)
+- [3. Buffer pool manager](#3-buffer-pool-manager)
+  * [3.1 components](#31-components)
+  * [3.2 DiskManager](#32-diskmanager)
+    + [3.2.1 write page](#321-write-page)
+    + [3.2.2 read page](#322-read-page)
+  * [3.3 NewPage](#33-newpage)
+    + [3.3.1 LRU Replacer](#331-lru-replacer)
+  * [3.4 FetchPage](#34-fetchpage)
+    + [3.4.1 If the page is aleady in the buffer pool.](#341-if-the-page-is-aleady-in-the-buffer-pool)
+    + [3.4.2 If the page is not in the buffer pool](#342-if-the-page-is-not-in-the-buffer-pool)
+  * [3.5 UnpinPage](#35-unpinpage)
+  * [3.6 DeletePage](#36-deletepage)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
 # 1. ExtendibleHashMap
