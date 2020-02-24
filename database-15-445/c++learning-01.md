@@ -90,7 +90,7 @@ Blob<int> ia;
 
 * The "const" in "void check(size_type i, const std::string &msg) const;" means the function "check" will not change the member of Blob class.
 
-##1.3 template class's member function declaration
+## 1.3 template class's member function declaration
 
 * member function can be defined either inside template or outside template. Example of function defined outside template below. "template" keyword followed by typename. We also need to specify this function is for "Blob" by using Blob<T>::
 
@@ -513,6 +513,17 @@ for (auto ele : elements) {
 }
 ```
 
+* Same bug happens when I implement ```Remove(key)``` of ExtendibleHashTable, I need to remove one ```Element``` from ```Bucket```.
+* If I do not add ```&```, then the copy assignemnt will be triggered which means I will modify a new vector instead.
+
+```
+std::list<std::shared_ptr<Element<K, V>>> &elements = buckets[offSet]->elements;
+
+for (auto ele = elements.begin(); ele != elements.end(); ele++) {
+   if ((*ele)->key == key) {
+   ...
+```
+
 ## 4.8 for loop auto error
 
 * remember to add reference &, when calling for loop.
@@ -553,3 +564,4 @@ public:
 ```
 
 * When running test, the for loop generate int and stores in ```Element```. But our ```Element``` class stores reference which will cause the data get garbled. 
+
