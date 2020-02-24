@@ -17,4 +17,4 @@
 
 ## cmu-15-445 (database)
 * [buffer pool manager concepts](https://github.com/marshallou/learning-notes/blob/master/database-15-445/buffer-pool-manager.md)
-* [buffer pool c++ implementation](https://github.com/marshallou/learning-notes/blob/master/database-15-445/buffer-pool-manager-implementation.md)
+* [c++ learning from buffer pool manger.md](https://github.com/marshallou/learning-notes/blob/master/database-15-445/c++learning-01.md)

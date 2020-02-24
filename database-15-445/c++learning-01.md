@@ -1,11 +1,48 @@
-# Buffer pool manager
+- [1. c++ learning: template](#1-c---learning--template)
+  * [1.1 template function example](#11-template-function-example)
+  * [1.2 template class example](#12-template-class-example)
+  * [1.4 Nested member template](#14-nested-member-template)
+  * [1.5 Friend and Template](#15-friend-and-template)
+- [2. c++ learning: Copy control](#2-c---learning--copy-control)
+  * [2.1 copy constructor](#21-copy-constructor)
+  * [2.2 direct initialization vs copy initialization](#22-direct-initialization-vs-copy-initialization)
+  * [2.3 copy assignment operator](#23-copy-assignment-operator)
+  * [2.4 copy constructor vs copy assignment operator](#24-copy-constructor-vs-copy-assignment-operator)
+  * [2.5 const data member and copy assignment operator](#25-const-data-member-and-copy-assignment-operator)
+  * [2.6 rules](#26-rules)
+  * [2.7 delete and default constructor](#27-delete-and-default-constructor)
+- [3 c++ learning: move](#3-c---learning--move)
+  * [3.1 why move?](#31-why-move-)
+  * [3.2 move constuctor](#32-move-constuctor)
+    + [3.2.1 the differene between lvalue and rvalue](#321-the-differene-between-lvalue-and-rvalue)
+    + [3.2.2 rvalue reference](#322-rvalue-reference)
+    + [3.2.3 about noexcept](#323-about-noexcept)
+  * [3.3 ```std:move```](#33----std-move---)
+  * [3.4 xvalue](#34-xvalue)
+  * [3.5 move assignment operator](#35-move-assignment-operator)
+  * [3.6 synthesized move operator](#36-synthesized-move-operator)
+  * [3.7 when move is used V.S when copy is used](#37-when-move-is-used-vs-when-copy-is-used)
+- [4. c++ learning others](#4-c---learning-others)
+  * [4.1 RAII-style](#41-raii-style)
+  * [4.2 mutex](#42-mutex)
+  * [4.3 remove element from list](#43-remove-element-from-list)
+  * [4.4 store object as key in std::map](#44-store-object-as-key-in-std--map)
+  * [4.5 retrieve the last element of list](#45-retrieve-the-last-element-of-list)
+  * [4.6 debug with GDB on mac](#46-debug-with-gdb-on-mac)
+  * [4.7 bug about copy assignment](#47-bug-about-copy-assignment)
+  * [4.8 for loop auto error](#48-for-loop-auto-error)
+  * [4.9 store reference in class](#49-store-reference-in-class)
 
-## 1. c++ learning: template
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
+
+# 1. c++ learning: template
 * There are two kinds of templates: **template function** and **template class**. ExtendibleHash is template class.
 * Both tempate function and template class needs to be **initialized**. 
 * When the template function is called, the process of generating code starts and the process is called "initialization". For a class template we must supply additional information inside angle brackets following the template’s name to initialize class template.
 
-### 1.1 template function example
+## 1.1 template function example
 
 ```
 template <typename T>
@@ -17,7 +54,7 @@ int compare(const T &v1, const T &v2)
 
 * The above template requires the parameter passed in to support "<" operator. Depending on how the compiler manages instantiation, these errors may be reported at link time.
 
-### 1.2 template class example
+## 1.2 template class example
 
 ```
 template <typename T> class Blob { 
@@ -53,7 +90,7 @@ Blob<int> ia;
 
 * The "const" in "void check(size_type i, const std::string &msg) const;" means the function "check" will not change the member of Blob class.
 
-###1.3 template class's member function declaration
+##1.3 template class's member function declaration
 
 * member function can be defined either inside template or outside template. Example of function defined outside template below. "template" keyword followed by typename. We also need to specify this function is for "Blob" by using Blob<T>::
 
@@ -87,7 +124,7 @@ auto ExtendibleHash<K, V>::breakBucket(std::shared_ptr<Bucket> oldBucket, int of
 }
 ```
 
-### 1.4 Nested member template
+## 1.4 Nested member template
 
 * We can also define a member template of a class template. In this case, both the class and the member have their own, independent, template parameters. example:
 
@@ -103,7 +140,7 @@ vector<long> vi = {0,1,2,3,4,5,6,7,8,9};
 Blob<int> a2(vi.begin(), vi.end());
 ```
 
-### 1.5 Friend and Template
+## 1.5 Friend and Template
 
 * We want to define a template ```BlobPtr<T>``` as a friend of ```Blob<T>``` so that the pointer have access to the non-public field of Blob
 
@@ -119,18 +156,18 @@ template <typename T> class Blob {	// each instantiation of Blob grants access 
 * These declarations are needed for the parameters used in the ```operator==``` function declaration and the friend declarations in ```Blob```.
 * ```operator==<T>``` function inside ```Blob``` takes ```Blob<T>&``` as parameter. ```friend class BlobPtr<T>;``` also refers the same ```T```. Thus the friendship is **restricted** to those instantiations of BlobPtr and the equality operator that are instantiated with the same type. i.e ```BlobPtr<char>``` does not access the nonpublic parts of ```Blob<int>```. But it can access any field of ```Blob<char>```
 
-## 2. c++ learning: Copy control
+# 2. c++ learning: Copy control
 
 * There is an good [stackoverflow](https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom) explaination. **Should take a look, when I get some time.**
 
-### 2.1 copy constructor
+## 2.1 copy constructor
 
 ```
 class Foo { 
 public:	Foo();	Foo(const Foo&);};
 ```
 
-### 2.2 direct initialization vs copy initialization
+## 2.2 direct initialization vs copy initialization
 
 * direct initialization: use ordinary constuctor
 
@@ -146,7 +183,7 @@ string nines = string(100, '9');
 
 **Note:** § 13.6.2 (p. 534), if a class has a move constructor, then copy initialization sometimes uses the move constructor instead of the copy constructor.
 
-### 2.3 copy assignment operator
+## 2.3 copy assignment operator
 
 * copy constructor takes reference as input and copy assignment operator returns a reference to their left-hand operand.
 
@@ -157,7 +194,7 @@ public:
 }
 ```
 
-### 2.4 copy constructor vs copy assignment operator
+## 2.4 copy constructor vs copy assignment operator
 * copy constructor controls how that class is initialized.
 
 ```
@@ -203,7 +240,7 @@ public:
 };
 ```
 
-### 2.5 const data member and copy assignment operator
+## 2.5 const data member and copy assignment operator
 
 * **If class has const member, it does not allow to have copy assignment operator. Intrinsically, copy assignment operator "=" is not replace the pointer to the object, but to modify the existing object with the value on the right hand-side.** It uses the information/the member of right hand side to modify the the member of left hand side.
 
@@ -212,12 +249,12 @@ You can either have a const data member or an assignment operator assigning to a
 
 * c++ primer "The synthesized copy-assignment operator is defined as deleted if a member has a deleted or inaccessible copy-assignment operator, or if the class has a const or reference member."
 
-### 2.6 rules
+## 2.6 rules
 
 * **If you need destructor, normally you will need both copy constructor and copy assignment operator. Normally you need destructor because class's member is allocated on heap which means copying will make multiple instance share the same heap allocated member. That member's destructor can be called multiple times.**
 * **If you need to copy constructor, you normally need copy assignment operator and vice versa.**
 
-### 2.7 delete and default constructor
+## 2.7 delete and default constructor
 
 ```
 struct NoCopy {	NoCopy() = default; // use the synthesized default constructor 
@@ -226,14 +263,14 @@ struct NoCopy {	NoCopy() = default; // use the synthesized default constructor
 	~NoCopy() = default; // use the synthesized destructor	// other members};
 ```
 
-##3 c++ learning: move
+# 3 c++ learning: move
 * There is a very good explaination on [stackoverflow](https://stackoverflow.com/questions/3106110/what-is-move-semantics)
 
-### 3.1 why move?
+## 3.1 why move?
 * performance boost
 * there are things that can not be copied, like I/O or unique_ptr.
 
-### 3.2 move constuctor
+## 3.2 move constuctor
 * it takes rvalue reference as input
 
 ```
@@ -243,7 +280,7 @@ StrVec::StrVec(StrVec &&s) noexcept: elements(s.elements), first_free(s.first_fr
 }
 ```
 
-#### 3.2.1 the differene between lvalue and rvalue
+### 3.2.1 the differene between lvalue and rvalue
 * copied some explaination from previous stackoverflow as below
 
 ```
@@ -258,7 +295,7 @@ string c(some_function_returning_a_string());   // Line 3
 * This is important because during the initialization of b and c, we could do whatever we wanted with the source string, and the client couldn't tell a difference!
 * variable is lavlue
 
-#### 3.2.2 rvalue reference
+### 3.2.2 rvalue reference
 * As we know, moving lvalue is dangerous, since lvalue can be referenced again later after the move. As move will "steal" the resource from lvalue, try use those resources in lvalue after move will cause undefine behavior.
 * rvalue reference implemented in c++ 11 is used to solve the problem.
 * it is reference that binds to a rvalue. 
@@ -287,10 +324,10 @@ unique_ptr<Shape> b(a);                 // error
 unique_ptr<Shape> c(make_triangle());   // okay
 ```
 
-#### 3.2.3 about noexcept
+### 3.2.3 about noexcept
 * To avoid this potential problem, vector must use a copy constructor instead of a move constructor during reallocation unless it knows that the element type’s move constructor cannot throw an exception. 
 
-### 3.3 ```std:move```
+## 3.3 ```std:move```
 * Sometimes, we want to move from lvalues. That is, sometimes we want the compiler to treat an lvalue as if it were an rvalue, so it can invoke the move constructor, even though it could be potentially unsafe.
 * When ```std:move``` is called. We’re using the ```move``` constructor. Since we are using move constructor, the memory managed by those objects will not be copied. 
 * It is essential to realize that the call to move promises that we do not intend to use lvalue again except to assign to it or to destroy it.
@@ -299,11 +336,11 @@ unique_ptr<Shape> c(make_triangle());   // okay
 ```int &&rr3 = std::move(rr1);
 ```
 
-### 3.4 xvalue
+## 3.4 xvalue
 
 * Note that even though ```std::move(a)``` is an rvalue, its evaluation does not create a temporary object. This conundrum forced the committee to introduce a third value category. Something that can be bound to an rvalue reference, even though it is not an rvalue in the traditional sense, is called an xvalue (eXpiring value). The traditional rvalues were renamed to prvalues (Pure rvalues).
 
-### 3.4 move assignment operator
+## 3.5 move assignment operator
 * like copy, for move, we also have move assignment operator
 * These members are similar to the corresponding copy operations, but they “steal” resources from their given object rather than copy them.
 * In particular, once its resources are moved, the original object must no longer point to those moved resources. Setting moved resources in rvalue to nullptr is very important. The reason is because the rvalue may be destroyed and during the time, the resources in the rvalue may also be destroyed by deconstructor.
@@ -333,24 +370,24 @@ string& operator=(string that)
 
 * Note that we pass the parameter that by value, so that has to be initialized just like any other string object. Exactly how is that going to be initialized? In the olden days of C++98, the answer would have been "by the copy constructor". In C++0x, the compiler chooses between the copy constructor and the move constructor based on whether the argument to the assignment operator is an lvalue or an rvalue.
 
-### 3.5 synthesized move operator
+## 3.6 synthesized move operator
 * if a class defines its own copy constructor, copy-assignment operator, or destructor, the move constructor and move- assignment operator are not synthesized. 
 * The compiler will synthesize a move constructor or a move-assignment operator only if the class doesn’t define any of its own copy-control members and if every nonstatic data member of the class can be moved. The compiler can move members of built-in type. It can also move members of a class type if the member’s class has the corresponding move operation.
 * Classes that define a move constructor or move-assignment operator must also define their own copy operations. Otherwise, those members are deleted by default.
 
-### 3.6 when move is used V.S when copy is used
+## 3.7 when move is used V.S when copy is used
 * Rvalues Are Moved, Lvalues Are Copied ...
 ```
 StrVec v1, v2;v1 = v2;                     // v2 is an lvalue; copy assignmentStrVec getVec(istream &);    // getVec returns an rvaluev2 = getVec(cin);            // getVec(cin) is an rvalue; move assignment
 ```
 
 
-## 4. c++ learning others
-### 4.1 RAII-style
+# 4. c++ learning others
+## 4.1 RAII-style
 * In RAII, holding a resource is a class invariant, and is tied to object lifetime: resource allocation (or acquisition) is done during object creation (specifically initialization), by the constructor, while resource deallocation (release) is done during object destruction (specifically finalization), by the destructor. In other words, resource acquisition must succeed for initialization to succeed. Thus the resource is guaranteed to be held between when initialization finishes and finalization starts (holding the resources is a class invariant), and to be held only when the object is alive. Thus if there are no object leaks, there are no resource leaks.
 * [wiki](https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization)
 
-### 4.2 mutex
+## 4.2 mutex
 * the std::mutex is not usually directly accessed. Normally accessed by std::unique_lock, std::lock_guard
 
 ```
@@ -362,7 +399,7 @@ std::lock_guard<std::mutex> guard(mtx);
 * https://en.cppreference.com/w/cpp/thread/mutex
 * https://en.cppreference.com/w/cpp/thread/lock_guard
 
-### 4.3 remove element from list
+## 4.3 remove element from list
 
 * remove will invalidate the list. So do not use ```for``` loop. Use ```while```.
 * Note, erase returns Iterator **following** the last removed element.
@@ -389,7 +426,7 @@ list.remove_if(list.begin(), list.end(),
 ```
 * [stackoverflow](https://stackoverflow.com/questions/596162/can-you-remove-elements-from-a-stdlist-while-iterating-through-it)
 
-### 4.4 store object as key in std::map
+## 4.4 store object as key in std::map
 
 * we can not store reference as key in std::map. As reference is immutable, map requires modification of key, I guess. Also I heard this is syntax problem where underline the reference implementation is using pointers.
 * We normally have three choices
@@ -434,7 +471,7 @@ list.remove_if(list.begin(), list.end(),
     }
 ```
 
-### 4.5 retrieve the last element of list
+## 4.5 retrieve the last element of list
 
 ```
 //error
@@ -447,5 +484,72 @@ value = *(--queue.end());
 queue.back();
 ```
 
+## 4.6 debug with GDB on mac
+* [setup steps on stackoverflow](https://stackoverflow.com/questions/11504377/gdb-fails-with-unable-to-find-mach-task-port-for-process-id-error)
 
-## 5.Extendible Hash Table
+## 4.7 bug about copy assignment
+
+* I defined a class called ```Bucket```, as follows. The ```elements``` is a list.
+
+```
+  class Bucket {
+  public:
+      std::list<std::shared_ptr<Element<K, V>>> elements;
+  };
+```
+* ```oldBucket->elements = *oldElements;``` will trigger copy assignment. Thus, adding element into ```oldElements``` will not change ```oldBucket->elements```.
+
+```
+oldBucket->elements = *oldElements;
+newBucket->elements = *newElements;
+int mask = (1 << (oldBucket->localDepth)) - 1;
+
+for (auto ele : elements) {
+    if ((std::hash<K>{}(ele->key) & mask) == offSet) {
+        oldElements->push_back(ele);
+    } else {
+        newElements->push_back(ele);
+    }
+}
+```
+
+## 4.8 for loop auto error
+
+* remember to add reference &, when calling for loop.
+
+```
+vector<Element<int, int>> elements;
+
+//error: this will copy element into ele variable
+for (auto ele : elements) {
+
+}
+
+//correct: should use reference instead
+for (auto &ele : elements) {
+
+}
+```
+
+* Note if we push reference into vector, the copy constructor will be triggered. It is not the reference that is pushed into the vector.
+
+## 4.9 store reference in class
+
+* previously I defined a class called ```Element<K, V>```.
+
+```
+class Element {
+public:
+    const &K key;
+    const &V value;
+    //constructor
+    Element() {
+    };
+
+    //constructor
+    Element(const K &k, const V &v): key(k), value(v) {
+    };
+};
+```
+
+* When running test, the for loop generate int and stores in ```Element```. But our ```Element``` class stores reference which will cause the data get garbled. 
